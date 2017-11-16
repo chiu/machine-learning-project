@@ -99,3 +99,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+# pycharm 
+.idea/dbnavigator.xml
+.idea/machine-learning-project.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/preferred-vcs.xml
+.idea/workspace.xml
+
+# macOS
+.DS_Store
