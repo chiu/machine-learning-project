@@ -29,11 +29,28 @@ def checkNulls(df,p) :
 # also, drop the Id column
 def processData(df) :
 	# dfWithDummies = pd.get_dummies(df)
-	# df.drop(['SalePrice'],axis=1)
+	classLabels = df['SalePrice']
+	df.drop(['SalePrice'],axis=1,inplace=True)
 	# All categorical features with NA
 	df = df.fillna('NA')
 
-	return df
+	return df,classLabels
+
+# Discretize the prices in i categories
+def processPrices(y,binNum) :
+	histo = np.histogram(y,binNum)
+	bins = histo[1]
+
+	print("Real histogram division : ")
+	print(histo[0])
+
+	newPrices = []
+	for i in range(len(y)) :
+		for j in range(len(bins)-1) :
+			if ((y[i] >= bins[j]) and (y[i] <= bins[j+1])) :
+				newPrices.append(j)
+
+	return newPrices
 
 def dropCols(df,cols) :
 	for col in cols :
@@ -84,6 +101,19 @@ def getCatVars(data) :
 
 	return catVars
 
+# Print a table showing the number of each class of elements existing in each cluster
+def printTable(model,y) :
+	classtable = np.zeros((5, 5), dtype=int)
+	for ii, _ in enumerate(y):
+		classtable[int(y[ii]) , model.labels_[ii]] += 1 
+
+	print("\n")
+	print("    | Cl. 1 | Cl. 2 | Cl. 3 | Cl. 4 |Cl. 5  |")
+	print("----|-------|-------|-------|-------|-------|")
+	for ii in range(5):
+		prargs = tuple([ii + 1] + list(classtable[ii, :]))
+		print(" C{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+
 # Main program	    		
 if __name__ == '__main__':
 	# Read data
@@ -98,23 +128,35 @@ if __name__ == '__main__':
 		'YearBuilt','YearRemodAdd','MasVnrArea','BsmtFinSF1','MiscVal','MoSold','YrSold','GarageCars',
 		'GarageArea','GarageYrBlt','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
 		'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','MSSubClass',
-		'BsmtUnfSF','TotalBsmtSF','SalePrice','MSZoning','LotFrontage','LotArea'])
+		'BsmtUnfSF','TotalBsmtSF','MSZoning','LotFrontage','LotArea'])
 
 	# Process the data (Fill nans)
-	df = processData(df)
+	df,ydf = processData(df)
+
+	# Get column names
+	colNames = list(df)
 
 	# Transform to numpy representation
 	trainData = df.as_matrix()
+	y = ydf.as_matrix()
 
-	kmodes_huang = KModes(n_clusters=3, init='Huang', verbose=1)
-	clusters = kmodes_huang.fit_predict(trainData)
+	# Generate prices separated in 5 bins
+	priceCategories = processPrices(y,3)
+
+	# Create and fit the model
+	model = KModes(n_clusters=3, init='Huang', verbose=0)
+	clusters = model.fit_predict(trainData)
 
 	# Print cluster centroids of the trained model.
-	print('k-modes (Huang) centroids:')
-	print(kmodes_huang.cluster_centroids_)
+	# print('k-modes (Huang) centroids:')
+	# print(model.cluster_centroids_)
+
 	# Print training statistics
-	print('Final training cost: {}'.format(kmodes_huang.cost_))
-	print('Training iterations: {}'.format(kmodes_huang.n_iter_))
+	# print('Final training cost: {}'.format(model.cost_))
+	# print('Training iterations: {}'.format(model.n_iter_))
+
+	printTable(model,priceCategories)
+
 	# Add dummies to the df
 	dfWithDummies = pd.get_dummies(df)
 	# Add a "cluster" column

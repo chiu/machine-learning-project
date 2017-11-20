@@ -30,8 +30,8 @@ def checkNulls(df,p) :
 def processData(df) :
 	# dfWithDummies = pd.get_dummies(df)
 	classLabels = df['SalePrice']
-	# df.drop(['SalePrice'],axis=1)
-	df.drop(['Id'],axis=1)
+	df.drop(['SalePrice'],axis=1,inplace=True)
+	df.drop(['Id'],axis=1,inplace=True)
 	# All numerical features with 0
 	df['LotFrontage'].fillna(0,inplace=True)
 	df['MasVnrArea'].fillna(0,inplace=True)
@@ -40,6 +40,22 @@ def processData(df) :
 	df = df.fillna('NA')
 
 	return df,classLabels
+
+# Discretize the prices in i categories
+def processPrices(y,binNum) :
+	histo = np.histogram(y,binNum)
+	bins = histo[1]
+
+	print("Real histogram division : ")
+	print(histo[0])
+
+	newPrices = []
+	for i in range(len(y)) :
+		for j in range(len(bins)-1) :
+			if ((y[i] >= bins[j]) and (y[i] <= bins[j+1])) :
+				newPrices.append(j)
+
+	return newPrices
 
 def dropCols(df,cols) :
 	for col in cols :
@@ -90,6 +106,19 @@ def getCatVars(data) :
 
 	return catVars
 
+# Print a table showing the number of each class of elements existing in each cluster
+def printTable(model,y) :
+	classtable = np.zeros((5, 5), dtype=int)
+	for ii, _ in enumerate(y):
+		classtable[int(y[ii]) , model.labels_[ii]] += 1 
+
+	print("\n")
+	print("    | Cl. 1 | Cl. 2 | Cl. 3 | Cl. 4 |Cl. 5  |")
+	print("----|-------|-------|-------|-------|-------|")
+	for ii in range(5):
+		prargs = tuple([ii + 1] + list(classtable[ii, :]))
+		print(" C{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+
 # Main program	    		
 if __name__ == '__main__':
 	# Read data
@@ -97,33 +126,39 @@ if __name__ == '__main__':
 	df = pd.read_csv(fName)
 
 	# Check columns with 50% or more nulls (nans)
-	checkNulls(df,0.5)
+	# checkNulls(df,0.5)
 
 	# Drop columns wit high % of nulls
 	# dropCols(df,['PoolQC','MiscFeature','Alley','Fence'])
 	
 	# Process the data (Fill nans)
-	df,classLabels = processData(df)
+	df,ydf = processData(df)
 
 	# Transform to numpy representation
 	trainData = df.as_matrix()
-	yTrain = classLabels.as_matrix()
+	y = ydf.as_matrix()
+
+	# Generate prices separated in 5 bins
+	priceCategories = processPrices(y,3)
 
 	# Obtain the number of each categorical column
 	numCatVars = getCatVars(trainData)
 
 	# Run k-prototypes and save the cluster of each example
-	kproto = KPrototypes(n_clusters=3, init='Cao', verbose=2)
+	kproto = KPrototypes(n_clusters=3, init='Cao', verbose=0)
 	clusters = kproto.fit_predict(trainData, categorical=numCatVars)
 
 	# Print cluster centroids of the trained model.
-	print(kproto.cluster_centroids_)
+	# print(kproto.cluster_centroids_)
 	# Print training statistics
-	print(kproto.cost_)
+	# print(kproto.cost_)
 	# Iteration
-	print(kproto.n_iter_)
+	# print(kproto.n_iter_)
 	# Info of each cluster centroid (features)
-	print(kproto.cluster_centroids_)
+	# print(kproto.cluster_centroids_)
+
+	# Print table
+	printTable(kproto,priceCategories)
 
 	# Add dummies to the df
 	dfWithDummies = pd.get_dummies(df)
