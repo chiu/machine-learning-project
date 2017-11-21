@@ -30,7 +30,7 @@ allFeatures = ['MSSubClass','MSZoning','LotFrontage','LotArea','Street','Alley',
 'GarageCond','PavedDrive','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','PoolQC','Fence',
 'MiscFeature','MiscVal','MoSold','YrSold','SaleType','SaleCondition']
 
-numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','MasVnrArea',
+numericalFeatures = ['WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','MasVnrArea',
 'BsmtFinSF1','MiscVal','GarageCars', 'GarageArea','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
 'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
 
@@ -154,7 +154,7 @@ def printCentroidInfo(centroids,featuresNum,featuresCat) :
 	centroidsNum = centroids[0]
 	centroidsCat = centroids[1]
 
-	# Obtain the features with different values in at least one cluster
+	# Obtain the categorical features with different values in at least one cluster
 	diffFeatures = []
 	for i in range(len(featuresCat)) :
 		equal = True
@@ -165,13 +165,35 @@ def printCentroidInfo(centroids,featuresNum,featuresCat) :
 				break
 			j += 1
 
+	print("Categorical features info : ")
 	# Print all features that affect the clusters and the values associated with them
 	for f in diffFeatures :
 		print("Feature : "+(featuresCat[f])) 
 		for j in range(len(centroidsCat)) :
-			print("Centroid "+str(j)+" : "+centroidsCat[j,f])
+			print("Centroid "+str(j+1)+" : "+centroidsCat[j,f])
 
 	print("Features not shown here have the same value for every cluster")
+
+	# Obtain the numerical features with different values in at least one cluster
+	diffFeatures = []
+	for i in range(len(featuresNum)) :
+		equal = True
+		j = 0
+		while (j < len(centroidsNum)-1 and equal) :
+			if (centroidsNum[j,i] != centroidsNum[j+1,i]) :
+				diffFeatures.append(i)
+				break
+			j += 1
+
+	print("Numerical features info : ")
+	# Print all features that affect the clusters and the values associated with them
+	for f in diffFeatures :
+		print("Feature : "+(featuresNum[f])) 
+		for j in range(len(centroidsNum)) :
+			print("Centroid "+str(j+1)+" : "+ str(centroidsNum[j,f]))
+
+	print("Features not shown here have the same value for every cluster")
+
 			
 
 
