@@ -20,6 +20,28 @@ import matplotlib.pylab as plt
 numRows = 1459 
 numCols = 79
 
+allFeatures = ['MSSubClass','MSZoning','LotFrontage','LotArea','Street','Alley','LotShape','LandContour','Utilities',
+'LotConfig','LandSlope','Neighborhood','Condition1','Condition2','BldgType','HouseStyle','OverallQual','OverallCond',
+'YearBuilt','YearRemodAdd','RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','MasVnrArea','ExterQual',
+'ExterCond','Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinSF1','BsmtFinType2','BsmtFinSF2',
+'BsmtUnfSF','TotalBsmtSF','Heating','HeatingQC','CentralAir','Electrical','1stFlrSF','2ndFlrSF','LowQualFinSF',
+'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BedroomAbvGr','KitchenAbvGr','KitchenQual','TotRmsAbvGrd',
+'Functional','Fireplaces','FireplaceQu','GarageType','GarageYrBlt','GarageFinish','GarageCars','GarageArea','GarageQual',
+'GarageCond','PavedDrive','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','PoolQC','Fence',
+'MiscFeature','MiscVal','MoSold','YrSold','SaleType','SaleCondition']
+
+numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','MasVnrArea',
+'BsmtFinSF1','MiscVal','GarageCars', 'GarageArea','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
+'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
+
+categoricalFeatures = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 
+'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 
+'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 
+'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 
+'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 
+'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
+
+
 # Check which columns of df have a percentage of null values (nan) higher than p
 def checkNulls(df,p) :
 	check_null = df.isnull().sum(axis=0).sort_values(ascending=False)/float(len(df))
@@ -39,6 +61,13 @@ def processData(df) :
 	# All categorical ones with NA
 	df = df.fillna('NA')
 
+	# Code in case we wanted them as integers,but doesn't make a difference
+	# for feature in categoricalFeatures :
+	# 	df[feature] = df[feature].astype('category')
+	
+	# cat_columns = df.select_dtypes(['category']).columns
+	# df[cat_columns] = df[cat_columns].apply(lambda x: x.cat.codes)
+
 	return df,classLabels
 
 # Discretize the prices in i categories
@@ -46,7 +75,7 @@ def processPrices(y,binNum) :
 	histo = np.histogram(y,binNum)
 	bins = histo[1]
 
-	print("Real histogram division : ")
+	print("------------------ Real histogram division ------------------")
 	print(histo[0])
 
 	newPrices = []
@@ -98,16 +127,15 @@ def checkScores(trainData,yTrain,tX2,tF) :
 # Get columns that are categorical
 def getCatVars(data) :
 	catVars = []
-	for row in data : 
-		for i in range(len(row)) :
-			if isinstance(row[i], str) :
-				if i not in catVars : 
-					catVars.append(i)
+	for i in range(len(allFeatures)) :
+		if allFeatures[i] in categoricalFeatures :
+			catVars.append(i)
 
 	return catVars
 
 # Print a table showing the number of each class of elements existing in each cluster
 def printTable(model,y) :
+	print("------------------ Price category Vs cluster placement table ------------------")
 	classtable = np.zeros((5, 5), dtype=int)
 	for ii, _ in enumerate(y):
 		classtable[int(y[ii]) , model.labels_[ii]] += 1 
@@ -117,12 +145,41 @@ def printTable(model,y) :
 	print("----|-------|-------|-------|-------|-------|")
 	for ii in range(5):
 		prargs = tuple([ii + 1] + list(classtable[ii, :]))
-		print(" C{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+		print(" P{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+
+def printCentroidInfo(centroids,featuresNum,featuresCat) :
+	print("------------------ Centroid Information ------------------")
+	# Produces centroid information for both numerical and
+	# categorical variables 
+	centroidsNum = centroids[0]
+	centroidsCat = centroids[1]
+
+	# Obtain the features with different values in at least one cluster
+	diffFeatures = []
+	for i in range(len(featuresCat)) :
+		equal = True
+		j = 0
+		while (j < len(centroidsCat)-1 and equal) :
+			if (centroidsCat[j,i] != centroidsCat[j+1,i]) :
+				diffFeatures.append(i)
+				break
+			j += 1
+
+	# Print all features that affect the clusters and the values associated with them
+	for f in diffFeatures :
+		print("Feature : "+(featuresCat[f])) 
+		for j in range(len(centroidsCat)) :
+			print("Centroid "+str(j)+" : "+centroidsCat[j,f])
+
+	print("Features not shown here have the same value for every cluster")
+			
+
 
 # Main program	    		
 if __name__ == '__main__':
 	# Read data
 	fName = sys.argv[1]
+	numClusters = int(sys.argv[2])
 	df = pd.read_csv(fName)
 
 	# Check columns with 50% or more nulls (nans)
@@ -130,26 +187,29 @@ if __name__ == '__main__':
 
 	# Drop columns wit high % of nulls
 	# dropCols(df,['PoolQC','MiscFeature','Alley','Fence'])
-	
+
 	# Process the data (Fill nans)
 	df,ydf = processData(df)
+
+	# Get column names
+	colNames = list(df)
 
 	# Transform to numpy representation
 	trainData = df.as_matrix()
 	y = ydf.as_matrix()
 
-	# Generate prices separated in 5 bins
-	priceCategories = processPrices(y,3)
+	# Generate prices separated in numClusters bins
+	priceCategories = processPrices(y,numClusters)
 
 	# Obtain the number of each categorical column
 	numCatVars = getCatVars(trainData)
 
 	# Run k-prototypes and save the cluster of each example
-	kproto = KPrototypes(n_clusters=3, init='Cao', verbose=0)
+	kproto = KPrototypes(n_clusters=numClusters, init='Cao', verbose=0)
 	clusters = kproto.fit_predict(trainData, categorical=numCatVars)
 
 	# Print cluster centroids of the trained model.
-	# print(kproto.cluster_centroids_)
+	printCentroidInfo(kproto.cluster_centroids_,numericalFeatures,categoricalFeatures)
 	# Print training statistics
 	# print(kproto.cost_)
 	# Iteration

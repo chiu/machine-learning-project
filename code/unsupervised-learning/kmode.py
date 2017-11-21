@@ -20,6 +20,32 @@ import matplotlib.pylab as plt
 numRows = 1459 
 numCols = 79
 
+# Years as numerical
+# numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea', 'YearBuilt',
+# 'YearRemodAdd','MasVnrArea','BsmtFinSF1','MiscVal','MoSold','YrSold','GarageCars', 'GarageArea','GarageYrBlt','Fireplaces',
+# 'TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF', 'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath',
+# 'BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
+
+# categoricalFeatures = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 
+# 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'RoofStyle', 
+# 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 
+# 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'BedroomAbvGr', 
+# 'KitchenAbvGr', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageQual', 'GarageCond', 
+# 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'SaleType', 'SaleCondition']
+
+# Years as categorical
+numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','MasVnrArea',
+'BsmtFinSF1','MiscVal','GarageCars', 'GarageArea','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
+'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
+
+
+categoricalFeatures = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 
+'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 
+'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 
+'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 
+'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 
+'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
+
 # Check which columns of df have a percentage of null values (nan) higher than p
 def checkNulls(df,p) :
 	check_null = df.isnull().sum(axis=0).sort_values(ascending=False)/float(len(df))
@@ -31,8 +57,18 @@ def processData(df) :
 	# dfWithDummies = pd.get_dummies(df)
 	classLabels = df['SalePrice']
 	df.drop(['SalePrice'],axis=1,inplace=True)
+
+	# Garage year built has NaNs, turn them into 0 if it doesn't have a garage
+	df['GarageYrBlt'].fillna(0,inplace=True)
+
 	# All categorical features with NA
 	df = df.fillna('NA')
+	# Code in case we wanted them as integers,but doesn't make a difference
+	# for feature in categoricalFeatures :
+	# 	df[feature] = df[feature].astype('category')
+	
+	# cat_columns = df.select_dtypes(['category']).columns
+	# df[cat_columns] = df[cat_columns].apply(lambda x: x.cat.codes)
 
 	return df,classLabels
 
@@ -41,7 +77,7 @@ def processPrices(y,binNum) :
 	histo = np.histogram(y,binNum)
 	bins = histo[1]
 
-	print("Real histogram division : ")
+	print("------------------ Real histogram division ------------------")
 	print(histo[0])
 
 	newPrices = []
@@ -103,6 +139,7 @@ def getCatVars(data) :
 
 # Print a table showing the number of each class of elements existing in each cluster
 def printTable(model,y) :
+	print("------------------ Price category Vs cluster placement table ------------------")
 	classtable = np.zeros((5, 5), dtype=int)
 	for ii, _ in enumerate(y):
 		classtable[int(y[ii]) , model.labels_[ii]] += 1 
@@ -112,41 +149,58 @@ def printTable(model,y) :
 	print("----|-------|-------|-------|-------|-------|")
 	for ii in range(5):
 		prargs = tuple([ii + 1] + list(classtable[ii, :]))
-		print(" C{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+		print(" P{0} |    {1:>2} |    {2:>2} |    {3:>2} |    {4:>2} |    {5:>2} |".format(*prargs))
+
+def printCentroidInfo(centroids,features) :
+	print("------------------ Centroid Information ------------------")
+
+	# Obtain the features with different values in at least one cluster
+	diffFeatures = []
+	for i in range(len(features)) :
+		equal = True
+		j = 0
+		while (j < len(centroids)-1 and equal) :
+			if (centroids[j,i] != centroids[j+1,i]) :
+				diffFeatures.append(i)
+				break
+			j += 1
+
+	# Print all features that affect the clusters and the values associated with them
+	for f in diffFeatures :
+		print("Feature : "+(features[f])) 
+		for j in range(len(centroids)) :
+			print("Centroid "+str(j)+" : "+centroids[j,f])
+
+	print("Features not shown here have the same value for every cluster")
 
 # Main program	    		
 if __name__ == '__main__':
 	# Read data
 	fName = sys.argv[1]
+	numClusters = int(sys.argv[2])
 	df = pd.read_csv(fName)
 
 	# Check columns with 50% or more nulls (nans)
 	# checkNulls(df,0.5)
 
 	# Drop numerical columns
-	dropCols(df,['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea',
-		'YearBuilt','YearRemodAdd','MasVnrArea','BsmtFinSF1','MiscVal','MoSold','YrSold','GarageCars',
-		'GarageArea','GarageYrBlt','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
-		'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','MSSubClass',
-		'BsmtUnfSF','TotalBsmtSF','MSZoning','LotFrontage','LotArea'])
+	dropCols(df,numericalFeatures)
 
 	# Process the data (Fill nans)
 	df,ydf = processData(df)
-
-	# Get column names
-	colNames = list(df)
 
 	# Transform to numpy representation
 	trainData = df.as_matrix()
 	y = ydf.as_matrix()
 
-	# Generate prices separated in 5 bins
-	priceCategories = processPrices(y,3)
+	# Generate prices separated in numClusters bins
+	priceCategories = processPrices(y,numClusters)
 
 	# Create and fit the model
-	model = KModes(n_clusters=3, init='Huang', verbose=0)
+	model = KModes(n_clusters=numClusters, init='Huang', verbose=0)
 	clusters = model.fit_predict(trainData)
 
+	printCentroidInfo(model.cluster_centroids_,categoricalFeatures)
 	# Print cluster centroids of the trained model.
 	# print('k-modes (Huang) centroids:')
 	# print(model.cluster_centroids_)
