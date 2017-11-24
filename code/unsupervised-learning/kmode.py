@@ -16,35 +16,34 @@ import matplotlib.pylab as plt
 
 # Paper on k-modes and k-prototypes
 # http://www.cs.ust.hk/~qyang/Teaching/537/Papers/huang98extensions.pdf
+# https://pdfs.semanticscholar.org/1955/c6801bca5e95a44e70ce14180f00fd3e55b8.pdf Cao method
+
+# Histogram bins for 3 clusters with outlayers [  34900. , 274933.33333333 , 514966.66666667, 755000.]
+# Histogram bins for 2 clusters with outlayers [  34900.  154900.  274900.]
+
+# 50% or more nulls :
+# PoolQC         0.995205
+# MiscFeature    0.963014
+# Alley          0.937671
+# Fence          0.807534
 
 numRows = 1459 
 numCols = 79
 
-# Years as numerical
-# numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea', 'YearBuilt',
-# 'YearRemodAdd','MasVnrArea','BsmtFinSF1','MiscVal','MoSold','YrSold','GarageCars', 'GarageArea','GarageYrBlt','Fireplaces',
-# 'TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF', 'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath',
-# 'BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
-
-# categoricalFeatures = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 
-# 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'RoofStyle', 
-# 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 
-# 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'BedroomAbvGr', 
-# 'KitchenAbvGr', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageQual', 'GarageCond', 
-# 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'SaleType', 'SaleCondition']
-
-# Years as categorical
-numericalFeatures = ['Id','WoodDeckSF','OpenPorchSF','EnclosedPorch','3SsnPorch','ScreenPorch','PoolArea','MasVnrArea',
-'BsmtFinSF1','MiscVal','GarageCars', 'GarageArea','Fireplaces','TotRmsAbvGrd','1stFlrSF','2ndFlrSF','LowQualFinSF',
-'GrLivArea','BsmtFullBath','BsmtHalfBath','FullBath','HalfBath','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','LotFrontage','LotArea']
+numericalFeatures = ['Id', 'LotFrontage', 'LotArea', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 
+'MasVnrArea', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 
+'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'TotRmsAbvGrd', 'Fireplaces', 'GarageYrBlt',
+ 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 
+ 'MiscVal', 'MoSold', 'YrSold']
 
 
 categoricalFeatures = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 
-'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 
-'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 
-'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 
-'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 
-'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'MoSold', 'YrSold', 'SaleType', 'SaleCondition']
+'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'RoofStyle', 'RoofMatl', 'Exterior1st', 
+'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 
+'BsmtFinType2', 'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'Functional', 
+'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 
+'SaleType', 'SaleCondition']
+
 
 # Check which columns of df have a percentage of null values (nan) higher than p
 def checkNulls(df,p) :
@@ -54,21 +53,24 @@ def checkNulls(df,p) :
 # Fill nans with 0s for numerical columns and with 'NA' for categorical ones 
 # also, drop the Id column
 def processData(df) :
-	# dfWithDummies = pd.get_dummies(df)
+	# Keep only elements in the first bin :
+	# df.drop(df[df.SalePrice > 274934].index, inplace=True)
+
+	# Only low prices middle bin
+	# df.drop(df[df.SalePrice < 114900].index,inplace=True)
+	# df.drop(df[df.SalePrice > 194900].index,inplace=True)
+
+	# Keep only elements in the first 2 bins :
+	# df.drop(df[df.SalePrice > 514967].index, inplace=True)
+
+	# Keep elements of first bin for 2 clusters : 
+	# df.drop(df[df.SalePrice > 154900].index,inplace=True)
+
 	classLabels = df['SalePrice']
 	df.drop(['SalePrice'],axis=1,inplace=True)
 
-	# Garage year built has NaNs, turn them into 0 if it doesn't have a garage
-	df['GarageYrBlt'].fillna(0,inplace=True)
-
 	# All categorical features with NA
 	df = df.fillna('NA')
-	# Code in case we wanted them as integers,but doesn't make a difference
-	# for feature in categoricalFeatures :
-	# 	df[feature] = df[feature].astype('category')
-	
-	# cat_columns = df.select_dtypes(['category']).columns
-	# df[cat_columns] = df[cat_columns].apply(lambda x: x.cat.codes)
 
 	return df,classLabels
 
@@ -79,6 +81,7 @@ def processPrices(y,binNum) :
 
 	print("------------------ Real histogram division ------------------")
 	print(histo[0])
+	print(bins)
 
 	newPrices = []
 	for i in range(len(y)) :
@@ -91,40 +94,6 @@ def processPrices(y,binNum) :
 def dropCols(df,cols) :
 	for col in cols :
 		df.drop([col],axis=1,inplace=True)
-
-# Check the score from chi2 and f-regression tests for each column
-def checkScores(trainData,yTrain,tX2,tF) :
-	# Tests with chi2 (Again, this is for classification so it's probably pointless)
-	selector = SelectKBest(chi2, k='all').fit(trainData,yTrain)
-	x_new = selector.transform(trainData) # not needed to get the score
-	scores = selector.scores_
-
-	print("Tests with X2 : ")
-	for t in tX2 :
-		count = 0
-		for i in range(len(scores)) :
-			if (scores[i] > t) :
-				# Uncomment to print each feature and score
-				# print(colNames[i] + " "+ str(scores[i]))
-				count += 1
-		print("Number of features above threshold "+str(t)+" : "+str(count))
-
-	# Tests with f_regression :
-	selector = SelectKBest(f_regression, k='all').fit(trainData,yTrain)
-	x_new = selector.transform(trainData) # not needed to get the score
-	scores = selector.scores_
-
-	print()
-
-	print("Tests with f_regression : (lower scores and thresholds)")
-	for t in tF :
-		count = 0
-		for i in range(len(scores)) :
-			if (scores[i] > t) :
-				# Uncomment to print each feature and score
-				# print(colNames[i] + " "+ str(scores[i]))
-				count += 1
-		print("Number of features above threshold "+str(t)+" : "+str(count))
 
 # Get columns that are categorical
 def getCatVars(data) :
@@ -169,7 +138,7 @@ def printCentroidInfo(centroids,features) :
 	for f in diffFeatures :
 		print("Feature : "+(features[f])) 
 		for j in range(len(centroids)) :
-			print("Centroid "+str(j)+" : "+centroids[j,f])
+			print("Centroid "+str(j+1)+" : "+centroids[j,f])
 
 	print("Features not shown here have the same value for every cluster")
 
@@ -197,17 +166,10 @@ if __name__ == '__main__':
 	priceCategories = processPrices(y,numClusters)
 
 	# Create and fit the model
-	model = KModes(n_clusters=numClusters, init='Huang', verbose=0)
+	model = KModes(n_clusters=numClusters, init='Cao', verbose=0)
 	clusters = model.fit_predict(trainData)
 
 	printCentroidInfo(model.cluster_centroids_,categoricalFeatures)
-	# Print cluster centroids of the trained model.
-	# print('k-modes (Huang) centroids:')
-	# print(model.cluster_centroids_)
-
-	# Print training statistics
-	# print('Final training cost: {}'.format(model.cost_))
-	# print('Training iterations: {}'.format(model.n_iter_))
 
 	printTable(model,priceCategories)
 

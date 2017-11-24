@@ -1,0 +1,198 @@
+------------------ Real histogram division ------------------
+[210 793 299]
+[  34900.  114900.  194900.  274900.]
+------------------ Centroid Information ------------------
+Categorical features info : 
+Feature : LotShape
+Centroid 1 : Reg
+Centroid 2 : IR1
+Centroid 3 : IR1
+Feature : LandContour
+Centroid 1 : Lvl
+Centroid 2 : Bnk
+Centroid 3 : Lvl
+Feature : LotConfig
+Centroid 1 : Inside
+Centroid 2 : Corner
+Centroid 3 : Inside
+Feature : Neighborhood
+Centroid 1 : NAmes
+Centroid 2 : ClearCr
+Centroid 3 : NAmes
+Feature : HouseStyle
+Centroid 1 : 1Story
+Centroid 2 : 1.5Fin
+Centroid 3 : 1Story
+Feature : Exterior1st
+Centroid 1 : VinylSd
+Centroid 2 : Plywood
+Centroid 3 : VinylSd
+Feature : Exterior2nd
+Centroid 1 : VinylSd
+Centroid 2 : Plywood
+Centroid 3 : VinylSd
+Feature : BsmtQual
+Centroid 1 : TA
+Centroid 2 : TA
+Centroid 3 : Gd
+Feature : BsmtExposure
+Centroid 1 : No
+Centroid 2 : Gd
+Centroid 3 : No
+Feature : BsmtFinType1
+Centroid 1 : Unf
+Centroid 2 : BLQ
+Centroid 3 : GLQ
+Feature : FireplaceQu
+Centroid 1 : NA
+Centroid 2 : Gd
+Centroid 3 : Gd
+Feature : GarageFinish
+Centroid 1 : Unf
+Centroid 2 : Fin
+Centroid 3 : Unf
+Features not shown here have the same value for every cluster
+Numerical features info : 
+Feature : LotFrontage
+Centroid 1 : 54.5948121646
+Centroid 2 : 64.6666666667
+Centroid 3 : 60.6516853933
+Feature : LotArea
+Centroid 1 : 8301.32289803
+Centroid 2 : 72946.8333333
+Centroid 3 : 16963.6685393
+Feature : OverallQual
+Centroid 1 : 5.80053667263
+Centroid 2 : 6.0
+Centroid 3 : 6.0393258427
+Feature : OverallCond
+Centroid 1 : 5.61359570662
+Centroid 2 : 5.83333333333
+Centroid 3 : 5.54494382022
+Feature : YearBuilt
+Centroid 1 : 1967.88640429
+Centroid 2 : 1962.5
+Centroid 3 : 1970.84831461
+Feature : YearRemodAdd
+Centroid 1 : 1982.69499106
+Centroid 2 : 1984.33333333
+Centroid 3 : 1983.31460674
+Feature : MasVnrArea
+Centroid 1 : 74.6815742397
+Centroid 2 : 132.666666667
+Centroid 3 : 95.0561797753
+Feature : BsmtFinSF1
+Centroid 1 : 366.572450805
+Centroid 2 : 1557.83333333
+Centroid 3 : 526.640449438
+Feature : BsmtFinSF2
+Centroid 1 : 42.2567084079
+Centroid 2 : 80.1666666667
+Centroid 3 : 85.2303370787
+Feature : BsmtUnfSF
+Centroid 1 : 550.756708408
+Centroid 2 : 396.5
+Centroid 3 : 532.825842697
+Feature : TotalBsmtSF
+Centroid 1 : 959.585867621
+Centroid 2 : 2034.5
+Centroid 3 : 1144.69662921
+Feature : 1stFlrSF
+Centroid 1 : 1063.60644007
+Centroid 2 : 2007.83333333
+Centroid 3 : 1314.73595506
+Feature : 2ndFlrSF
+Centroid 1 : 310.836314848
+Centroid 2 : 507.0
+Centroid 3 : 363.303370787
+Feature : LowQualFinSF
+Centroid 1 : 5.93917710197
+Centroid 2 : 0.0
+Centroid 3 : 7.42134831461
+Feature : GrLivArea
+Centroid 1 : 1380.38193202
+Centroid 2 : 2514.83333333
+Centroid 3 : 1685.46067416
+Feature : BsmtFullBath
+Centroid 1 : 0.37030411449
+Centroid 2 : 1.16666666667
+Centroid 3 : 0.494382022472
+Feature : BsmtHalfBath
+Centroid 1 : 0.0545617173524
+Centroid 2 : 0.0
+Centroid 3 : 0.0898876404494
+Feature : FullBath
+Centroid 1 : 1.48658318426
+Centroid 2 : 1.83333333333
+Centroid 3 : 1.60674157303
+Feature : HalfBath
+Centroid 1 : 0.347048300537
+Centroid 2 : 0.333333333333
+Centroid 3 : 0.443820224719
+Feature : TotRmsAbvGrd
+Centroid 1 : 6.20393559928
+Centroid 2 : 8.5
+Centroid 3 : 6.92134831461
+Feature : Fireplaces
+Centroid 1 : 0.476744186047
+Centroid 2 : 2.0
+Centroid 3 : 0.910112359551
+Feature : GarageYrBlt
+Centroid 1 : 1838.26565295
+Centroid 2 : 1965.5
+Centroid 3 : 1941.67977528
+Feature : GarageCars
+Centroid 1 : 1.60733452594
+Centroid 2 : 2.0
+Centroid 3 : 1.93258426966
+Feature : GarageArea
+Centroid 1 : 425.421288014
+Centroid 2 : 651.5
+Centroid 3 : 524.93258427
+Feature : WoodDeckSF
+Centroid 1 : 77.0751341682
+Centroid 2 : 301.666666667
+Centroid 3 : 113.634831461
+Feature : OpenPorchSF
+Centroid 1 : 39.7853309481
+Centroid 2 : 116.666666667
+Centroid 3 : 53.9438202247
+Feature : EnclosedPorch
+Centroid 1 : 23.6636851521
+Centroid 2 : 8.33333333333
+Centroid 3 : 22.9269662921
+Feature : 3SsnPorch
+Centroid 1 : 2.87567084079
+Centroid 2 : 0.0
+Centroid 3 : 6.39325842697
+Feature : ScreenPorch
+Centroid 1 : 11.9329159213
+Centroid 2 : 29.1666666667
+Centroid 3 : 25.1573033708
+Feature : PoolArea
+Centroid 1 : 1.09481216458
+Centroid 2 : 80.0
+Centroid 3 : 5.79213483146
+Feature : MiscVal
+Centroid 1 : 29.0107334526
+Centroid 2 : 116.666666667
+Centroid 3 : 167.752808989
+Feature : MoSold
+Centroid 1 : 6.26118067979
+Centroid 2 : 5.5
+Centroid 3 : 6.40449438202
+Feature : YrSold
+Centroid 1 : 2007.87298748
+Centroid 2 : 2008.16666667
+Centroid 3 : 2007.55617978
+Features not shown here have the same value for every cluster
+------------------ Price category Vs cluster placement table ------------------
+
+
+    | Cl. 1 | Cl. 2 | Cl. 3 | Cl. 4 |Cl. 5  |
+----|-------|-------|-------|-------|-------|
+ P1 |    199 |     0 |    11 |     0 |     0 |
+ P2 |    702 |     2 |    89 |     0 |     0 |
+ P3 |    217 |     4 |    78 |     0 |     0 |
+ P4 |     0 |     0 |     0 |     0 |     0 |
+ P5 |     0 |     0 |     0 |     0 |     0 |

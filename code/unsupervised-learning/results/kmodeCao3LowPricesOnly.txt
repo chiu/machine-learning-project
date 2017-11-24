@@ -1,0 +1,74 @@
+------------------ Real histogram division ------------------
+[210 793 299]
+------------------ Centroid Information ------------------
+Feature : MSSubClass
+Centroid 1 : 60
+Centroid 2 : 50
+Centroid 3 : 20
+Feature : MSZoning
+Centroid 1 : RL
+Centroid 2 : RM
+Centroid 3 : RL
+Feature : Neighborhood
+Centroid 1 : CollgCr
+Centroid 2 : OldTown
+Centroid 3 : NAmes
+Feature : HouseStyle
+Centroid 1 : 1Story
+Centroid 2 : 1.5Fin
+Centroid 3 : 1Story
+Feature : Exterior1st
+Centroid 1 : VinylSd
+Centroid 2 : Wd Sdng
+Centroid 3 : HdBoard
+Feature : Exterior2nd
+Centroid 1 : VinylSd
+Centroid 2 : Wd Sdng
+Centroid 3 : HdBoard
+Feature : ExterQual
+Centroid 1 : Gd
+Centroid 2 : TA
+Centroid 3 : TA
+Feature : Foundation
+Centroid 1 : PConc
+Centroid 2 : BrkTil
+Centroid 3 : CBlock
+Feature : BsmtQual
+Centroid 1 : Gd
+Centroid 2 : TA
+Centroid 3 : TA
+Feature : BsmtFinType1
+Centroid 1 : GLQ
+Centroid 2 : Unf
+Centroid 3 : ALQ
+Feature : HeatingQC
+Centroid 1 : Ex
+Centroid 2 : TA
+Centroid 3 : TA
+Feature : BedroomAbvGr
+Centroid 1 : 3
+Centroid 2 : 2
+Centroid 3 : 3
+Feature : KitchenQual
+Centroid 1 : Gd
+Centroid 2 : TA
+Centroid 3 : TA
+Feature : GarageType
+Centroid 1 : Attchd
+Centroid 2 : Detchd
+Centroid 3 : Attchd
+Feature : GarageFinish
+Centroid 1 : RFn
+Centroid 2 : Unf
+Centroid 3 : Unf
+Features not shown here have the same value for every cluster
+------------------ Price category Vs cluster placement table ------------------
+
+
+    | Cl. 1 | Cl. 2 | Cl. 3 | Cl. 4 |Cl. 5  |
+----|-------|-------|-------|-------|-------|
+ P1 |     9 |    124 |    77 |     0 |     0 |
+ P2 |    229 |    149 |    415 |     0 |     0 |
+ P3 |    237 |    13 |    49 |     0 |     0 |
+ P4 |     0 |     0 |     0 |     0 |     0 |
+ P5 |     0 |     0 |     0 |     0 |     0 |
