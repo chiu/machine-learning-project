@@ -19,8 +19,8 @@ import matplotlib.pylab as plt
 # https://pdfs.semanticscholar.org/1955/c6801bca5e95a44e70ce14180f00fd3e55b8.pdf Cao method
 
 
-# Histogram bins for 3 clusters with outlayers [  34900. , 274933.33333333 , 514966.66666667, 755000.]
-# Histogram bins for 2 clusters with outlayers [  34900.  154900.  274900.]
+# Histogram bins for 3 clusters with outliers [  34900. , 274933.33333333 , 514966.66666667, 755000.]
+# Histogram bins for 2 clusters with outliers [  34900.  154900.  274900.]
 
 # 50% or more nulls ;
 # PoolQC         0.995205
@@ -31,6 +31,7 @@ import matplotlib.pylab as plt
 
 numRows = 1459 
 numCols = 79
+histoBins = []
 
 allFeatures = ['MSSubClass','MSZoning','LotFrontage','LotArea','Street','Alley','LotShape','LandContour','Utilities',
 'LotConfig','LandSlope','Neighborhood','Condition1','Condition2','BldgType','HouseStyle','OverallQual','OverallCond',
@@ -65,21 +66,13 @@ def checkNulls(df,p) :
 # also, drop the Id column
 def processData(df) :
 	# Keep only elements in the first bin :
-	# df.drop(df[df.SalePrice > 274934].index, inplace=True)
-
-	# Only low prices middle bin
-	# df.drop(df[df.SalePrice < 114900].index,inplace=True)
-	# df.drop(df[df.SalePrice > 194900].index,inplace=True)
-
-	# Keep only elements in the first 2 bins :
-	# df.drop(df[df.SalePrice > 514967].index, inplace=True)
-
-	# Keep elements of first bin for 2 clusters : 
-	# df.drop(df[df.SalePrice > 154900].index,inplace=True)
+	df.drop(df[df.SalePrice > 274934].index, inplace=True)
 	
 	classLabels = df['SalePrice']
 	df.drop(['SalePrice'],axis=1,inplace=True)
 	df.drop(['Id'],axis=1,inplace=True)
+
+	df[['BsmtFinSF1']] = df[['BsmtFinSF1']].apply(pd.to_numeric)
 
 	# Drop the columns with 50% or more nulls :
 	# df.drop(['PoolQC'],axis=1,inplace=True)
@@ -91,6 +84,14 @@ def processData(df) :
 	df['LotFrontage'].fillna(0,inplace=True)
 	df['MasVnrArea'].fillna(0,inplace=True)
 	df['GarageYrBlt'].fillna(0,inplace=True)
+	df['BsmtFinSF1'].fillna(0,inplace=True)
+	df['BsmtFinSF2'].fillna(0,inplace=True)
+	df['BsmtUnfSF'].fillna(0,inplace=True)
+	df['TotalBsmtSF'].fillna(0,inplace=True)
+	df['BsmtFullBath'].fillna(0,inplace=True)
+	df['BsmtHalfBath'].fillna(0,inplace=True)
+	df['GarageCars'].fillna(0,inplace=True)
+	df['GarageArea'].fillna(0,inplace=True)
 	# All categorical ones with NA
 	df = df.fillna('NA')
 
@@ -115,6 +116,7 @@ def processPrices(y,binNum) :
 			if ((y[i] >= bins[j]) and (y[i] <= bins[j+1])) :
 				newPrices.append(j)
 
+	histoBins = bins
 	return newPrices
 
 def dropCols(df,cols) :
@@ -199,13 +201,21 @@ if __name__ == '__main__':
 	# Read data
 	fName = sys.argv[1]
 	numClusters = int(sys.argv[2])
-	df = pd.read_csv(fName)
+	# Using test set
+	if (len(sys.argv) > 3) :
+		fName2 = sys.argv[3]
+		fpreds = sys.argv[4]
+		dffeatures = pd.read_csv(fName2)
+		dfpreds = pd.read_csv(fpreds)
+		dfpreds[['Id','SalePrice']] = dfpreds[['Id','SalePrice']].apply(pd.to_numeric)
+		dfpreds.drop(['Id'],axis=1,inplace=True)
+		df2 = pd.concat([dffeatures, dfpreds], axis=1)
 
-	# Check columns with 50% or more nulls (nans)
-	# checkNulls(df,0.5)
+	df1 = pd.read_csv(fName)
 
-	# Drop columns wit high % of nulls
-	# dropCols(df,['PoolQC','MiscFeature','Alley','Fence'])
+	if (len(sys.argv) > 3) :
+		frames = [df1,df2]
+		df = pd.concat(frames)
 
 	# Process the data (Fill nans)
 	df,ydf = processData(df)

@@ -29,6 +29,7 @@ import matplotlib.pylab as plt
 
 numRows = 1459 
 numCols = 79
+histoBins = []
 
 numericalFeatures = ['Id', 'LotFrontage', 'LotArea', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 
 'MasVnrArea', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 
@@ -54,17 +55,7 @@ def checkNulls(df,p) :
 # also, drop the Id column
 def processData(df) :
 	# Keep only elements in the first bin :
-	# df.drop(df[df.SalePrice > 274934].index, inplace=True)
-
-	# Only low prices middle bin
-	# df.drop(df[df.SalePrice < 114900].index,inplace=True)
-	# df.drop(df[df.SalePrice > 194900].index,inplace=True)
-
-	# Keep only elements in the first 2 bins :
-	# df.drop(df[df.SalePrice > 514967].index, inplace=True)
-
-	# Keep elements of first bin for 2 clusters : 
-	# df.drop(df[df.SalePrice > 154900].index,inplace=True)
+	df.drop(df[df.SalePrice > 274934].index, inplace=True)
 
 	classLabels = df['SalePrice']
 	df.drop(['SalePrice'],axis=1,inplace=True)
@@ -89,6 +80,7 @@ def processPrices(y,binNum) :
 			if ((y[i] >= bins[j]) and (y[i] <= bins[j+1])) :
 				newPrices.append(j)
 
+	histoBins = bins
 	return newPrices
 
 def dropCols(df,cols) :
@@ -147,7 +139,18 @@ if __name__ == '__main__':
 	# Read data
 	fName = sys.argv[1]
 	numClusters = int(sys.argv[2])
+	if (len(sys.argv) > 3) :
+		fName2 = sys.argv[2]
+		fpreds = sys.argv[3]
+		dffeatures = pd.read_csv(fName2)
+		dfpreds = pd.read_csv(fpreds)
+		df2 = pd.concat([dffeatures,dfpreds],axis=1)
+
 	df = pd.read_csv(fName)
+
+	if (len(sys.argv) > 3) :
+		frames = [df,df2]
+		df = pd.concat(frames)
 
 	# Check columns with 50% or more nulls (nans)
 	# checkNulls(df,0.5)
