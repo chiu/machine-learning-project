@@ -9,6 +9,8 @@ from keras.models import Sequential
 from numpy import *
 from sklearn.model_selection import train_test_split
 
+
+number_epochs = 5000
 inputs = '../../data/train.csv'
 all_data_df = pd.read_csv(inputs)
 real_test = pd.read_csv('../../data/test.csv')
@@ -82,7 +84,7 @@ model.add(Dense(units=1, input_dim=num_hidden_layer_3_units, activation='relu'))
 model.compile(loss=keras.losses.mean_squared_error, optimizer=keras.optimizers.Adam(lr=0.0001))
 earlyStopping = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.0000001, patience=10, verbose=0,
                                               mode='auto')
-model.fit(x_train, y_train, epochs=5000, batch_size=32, validation_data=(x_test, y_test))
+model.fit(x_train, y_train, epochs=number_epochs, batch_size=32, validation_data=(x_test, y_test))
 loss_and_metrics = model.evaluate(x_test, y_test, batch_size=128)
 
 print(loss_and_metrics)
